@@ -14,3 +14,11 @@
 - Added `stats` route import from `@/routes/dashboard`
 - Added "View Stats" button link to the stats page using Inertia's `<Link>` component
 - All tests passing (39/39)
+
+## 2026-05-28 - Task 3: Add a "Copy to clipboard" button on the stats page
+
+- Added `ref` import from `vue` for reactive state management
+- Added `copied` ref to track copy state
+- Added `copyToClipboard()` function using Clipboard API
+- Added "Copy to clipboard" button with feedback text
+- All tests passing (39/39)

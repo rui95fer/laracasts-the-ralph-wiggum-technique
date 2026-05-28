@@ -2,10 +2,22 @@
 import { Head } from '@inertiajs/vue3';
 import { dashboard } from '@/routes';
 import { stats } from '@/routes/dashboard';
+import { ref } from 'vue';
 
 defineProps<{
     totalUsers: number;
 }>();
+
+const copied = ref(false);
+
+function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+        copied.value = true;
+        setTimeout(() => {
+            copied.value = false;
+        }, 2000);
+    });
+}
 
 defineOptions({
     layout: {
@@ -34,6 +46,12 @@ defineOptions({
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground">Total Users</p>
                     <p class="text-4xl font-bold">{{ totalUsers }}</p>
+                    <button
+                        @click="copyToClipboard(String(totalUsers))"
+                        class="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                    >
+                        {{ copied ? 'Copied!' : 'Copy to clipboard' }}
+                    </button>
                 </div>
             </div>
         </div>
