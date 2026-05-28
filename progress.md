@@ -22,3 +22,10 @@
 - Added `copyToClipboard()` function using Clipboard API
 - Added "Copy to clipboard" button with feedback text
 - All tests passing (39/39)
+
+## 2026-05-28 - Task 4: Show the current date and time on the stats page, formatted as "Last refreshed: May 28, 2026 3:45 PM"
+
+- Added `lastRefreshed` prop to `DashboardController::stats()` using `now()->format('M d, Y g:i A')`
+- Updated `Stats.vue` to accept and display the `lastRefreshed` prop
+- Added "Last refreshed: {datetime}" text below the stats card
+- All tests passing (39/39)

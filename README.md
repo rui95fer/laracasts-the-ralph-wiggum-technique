@@ -48,3 +48,35 @@
   Allow: npm install, npm create
   Deny: rm -rf, git reset --hard
   ```
+
+## Episode 02 — Improving Our First Ralph Loop
+
+- **The official CLI plugin runs the loop inside the context window, so memory accumulates and eventually needs compacting.**
+  ```bash
+  ralf loop
+  ```
+
+- **Avoid the official plugin because it defeats Ralph's core idea: start fresh each iteration and externalize memory to markdown files.**
+
+- **Use the `--output-format stream-json` flag to stream model output as it arrives, instead of waiting for print mode to finish.**
+  ```bash
+  claude -p --output-format stream-json --verbose "Read the file"
+  ```
+
+- **Parse the JSON stream into human-readable strings so you can watch the model work in real time.**
+  ```js
+  // Each line is a JSON object — parse it and extract the message type.
+  const parsed = JSON.parse(line);
+  ```
+
+- **The core Ralph architecture stays the same — a for loop — you are only improving observability.**
+  ```js
+  for (let i = 0; i < iterations; i++) {
+      // run agent, parse stream output
+  }
+  ```
+
+- **Generate test messages before prompting your coding agent so it has a concrete example of the JSON format to work with.**
+  ```bash
+  claude -p --output-format stream-json --verbose "Read file, fetch url, run command" > example.txt
+  ```

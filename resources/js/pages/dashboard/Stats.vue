@@ -6,6 +6,7 @@ import { ref } from 'vue';
 
 defineProps<{
     totalUsers: number;
+    lastRefreshed: string;
 }>();
 
 const copied = ref(false);
@@ -55,5 +56,7 @@ defineOptions({
                 </div>
             </div>
         </div>
+
+        <p class="text-sm text-muted-foreground">Last refreshed: {{ lastRefreshed }}</p>
     </div>
 </template>

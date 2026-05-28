@@ -15,6 +15,7 @@ class DashboardController extends Controller
     {
         return Inertia::render('dashboard/Stats', [
             'totalUsers' => User::count(),
+            'lastRefreshed' => now()->format('M d, Y g:i A'),
         ]);
     }
 }
