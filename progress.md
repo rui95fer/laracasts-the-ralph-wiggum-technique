@@ -7,3 +7,10 @@
 - Created `resources/js/pages/dashboard/Stats.vue` page displaying total users
 - Generated Wayfinder TypeScript routes for the new endpoint
 - All tests passing (39/39)
+
+## 2026-05-28 - Task 2: Add a link to /dashboard/stats from the main dashboard page
+
+- Added `Link` import from `@inertiajs/vue3` to `Dashboard.vue`
+- Added `stats` route import from `@/routes/dashboard`
+- Added "View Stats" button link to the stats page using Inertia's `<Link>` component
+- All tests passing (39/39)

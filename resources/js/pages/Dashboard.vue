@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { dashboard } from '@/routes';
+import { stats } from '@/routes/dashboard';
 
 defineOptions({
     layout: {
@@ -42,6 +43,14 @@ defineOptions({
             class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
         >
             <PlaceholderPattern />
+        </div>
+        <div class="flex justify-center">
+            <Link
+                :href="stats.url()"
+                class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+                View Stats
+            </Link>
         </div>
     </div>
 </template>
