@@ -122,3 +122,52 @@
   ```
 
 - **A PRD forces you to think about the problem and front-load decisions before the model starts coding.**
+
+## Episode 04 — Creating A PRD With Our PRD Skill
+
+- **A PRD skill is a markdown file with front matter that instructs the model on how to format agent-ready PRDs.**
+  ```md
+  ---
+  name: PRD
+  description: Create a product requirement document for handoff to an AI agent.
+  ---
+  ```
+
+- **Set the skill to ask clarifying questions so it behaves like plan mode and gathers requirements before writing.**
+  ```md
+  Ask clarifying questions to fully understand the feature's scope.
+  Research the codebase and explore relevant parts.
+  ```
+
+- **Use a PRD directory workflow: to-refine (model outputs here) → backlog (you approve for Ralph loop) → complete (finished reference).**
+  ```bash
+  prd/to-refine/snackbar-web-shop.md
+  prd/backlog/snackbar-web-shop.md
+  prd/complete/snackbar-web-shop.md
+  ```
+
+- **Include a template in the skill so the model outputs consistent PRDs with sections like goals, user stories, requirements, database changes, and implementation tasks.**
+  ```md
+  ## Implementation Tasks
+  - [ ] [HIGH] Clean up boilerplate and create base files.
+  - [ ] [MEDIUM] Add visual feedback on add to cart.
+  - [ ] [LOW] Add hover effects and transitions.
+  ```
+
+- **Guidelines in the skill prevent vague requirements — explain why, not just what, and keep scope bounded.**
+  ```md
+  Vague requirements lead to misaligned implementations.
+  Include context. Explain why, not just what.
+  Keep the scope bounded.
+  ```
+
+- **Set iteration count higher than the number of tasks so the Ralph loop completes without hitting max iterations.**
+  ```bash
+  # 10 tasks but only 10 iterations = may not finish
+  for i in $(seq 1 20); do ... done
+  ```
+
+- **Destructive commands like `rm` are disallowed by permission settings, so the model skips file deletion and unused files may remain.**
+  ```md
+  Deny: rm -rf, git reset --hard
+  ```
