@@ -80,3 +80,45 @@
   ```bash
   claude -p --output-format stream-json --verbose "Read file, fetch url, run command" > example.txt
   ```
+
+## Episode 03 — What Is A PRD?
+
+- **A PRD (Product Requirement Document) describes the problem, goal, constraints, and success criteria so you understand what to build before building it.**
+  ```md
+  Problem: Onboarding is a massive form with no language support.
+  Goal: Modernize UX, collect business category, reduce time to first order.
+  ```
+
+- **Agent-ready PRDs go deeper than human PRDs because agents don't attend meetings — they only execute what's written.**
+  ```md
+  Include: code examples, API contracts, database schemas, pseudocode.
+  ```
+
+- **The implementation tasks list is the most important section — the model works through tasks one at a time, checking each off before exiting.**
+  ```md
+  - [ ] Create migration to add category column to business table.
+  - [ ] Create BusinessCategory enum.
+  - [ ] Create OnboardingController.
+  ```
+
+- **Front-load important decisions in the PRD so the model has a strong outline and fills in the blanks.**
+  ```md
+  Add column at end of table to avoid MySQL table rebuild and downtime.
+  Reuse existing component library for dropdowns and selects.
+  ```
+
+- **Define what's out of scope to prevent the model from adding unnecessary features.**
+  ```md
+  Out of scope: email verification, social logins.
+  ```
+
+- **Include technical details like specific database changes so the model doesn't make unsafe assumptions.**
+  ```sql
+  -- Bad: triggers table rebuild
+  ALTER TABLE businesses ADD category VARCHAR AFTER title;
+
+  -- Good: appends column safely
+  ALTER TABLE businesses ADD category VARCHAR;
+  ```
+
+- **A PRD forces you to think about the problem and front-load decisions before the model starts coding.**
