@@ -228,3 +228,80 @@
 - **Stick close to tmux defaults instead of heavy customization — muscle memory makes the commands second nature within a day or two.**
 
 - **Use tmux where possible; screen is a great fallback for environments that can't install tmux.**
+
+## Episode 06 — Permissions And Sandboxing
+
+- **Accept Edits mode only auto-accepts file modifications — bash commands still require separate permission.**
+  ```md
+  Accept Edits: auto-accepts file writes
+  Bash commands: still prompt for approval
+  ```
+
+- **Use allow and deny lists to control which bash commands run without prompting.**
+  ```json
+  "allow": ["npm install", "npm run *"],
+  "deny": ["rm *", "git rm *"]
+  ```
+
+- **Glob patterns work anywhere in the command — word boundary matters for matching.**
+  ```md
+  "ls *"   → matches "ls -la" but not "lsfoo"
+  "ls*"    → matches "lsfoo" and "ls -la"
+  ```
+
+- **The deny list always wins over the allow list, so block destructive commands explicitly.**
+  ```json
+  "deny": ["rm *", "read .env*"]
+  ```
+
+- **In print mode (Ralph loops), permission requests fail silently because there's no interactive prompt — the model must work around it.**
+  ```bash
+  # This fails in print mode — no way to approve interactively
+  claude -p "curl https://laracasts.com"
+  ```
+
+- **Enable native sandboxing to auto-allow safe bash commands while blocking risky operations at the OS level.**
+  ```md
+  sandbox → sandbox bash tool with auto allow
+  ```
+
+- **The sandbox blocks all outbound network connections by default, reducing prompt injection and data exfiltration risk.**
+  ```md
+  curl https://laracasts.com → fails in sandbox
+  ```
+
+- **Allow specific domains in the sandbox settings when the model needs network access.**
+  ```json
+  "sandbox": {
+    "network": { "allowDomains": ["laracasts.com"] }
+  }
+  ```
+
+- **The sandbox allows reading the entire file system but restricts writes to the current working directory by default.**
+  ```md
+  Read:  allowed everywhere
+  Write: scoped to current directory
+  ```
+
+- **Customize file permissions in the sandbox to allow or deny read/write access to specific paths.**
+  ```json
+  "sandbox": {
+    "fileSystem": {
+      "allowWrite": ["fastlane"],
+      "denyWrite": [".github"],
+      "denyRead": [".aws"]
+    }
+  }
+  ```
+
+- **Use `excludedCommands` for tools that don't work inside the sandbox, like Docker.**
+  ```json
+  "sandbox": {
+    "excludedCommands": ["docker"]
+  }
+  ```
+
+- **Enable sandbox fallback so commands that fail due to sandbox restrictions fall back to the normal permission flow.**
+  ```md
+  Overrides → allow un-sandboxed fallback
+  ```
