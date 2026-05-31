@@ -171,3 +171,60 @@
   ```md
   Deny: rm -rf, git reset --hard
   ```
+
+## Episode 05 — Running Ralph In The Background
+
+- **Use `screen` to keep processes running even after closing the terminal, so Ralph loops don't lose progress.**
+  ```bash
+  screen
+  ```
+
+- **Name your screen sessions so you can identify and reattach to the right one later.**
+  ```bash
+  screen -s Ralph
+  ```
+
+- **Detach from screen with `Ctrl+A, D` and reattach with `screen -r` to check in on a running loop.**
+  ```bash
+  screen -r Ralph
+  ```
+
+- **List all detached screen sessions to see what's still running in the background.**
+  ```bash
+  screen -ls
+  ```
+
+- **`tmux` is a modern, more flexible alternative to screen — the basics are all you need to get started.**
+  ```bash
+  tmux new -s Ralph
+  ```
+
+- **Detach from tmux with `Ctrl+B, D` and reattach with `tmux attach -t` followed by the session name.**
+  ```bash
+  tmux attach -t Ralph
+  ```
+
+- **Split panes in tmux to run multiple tools side by side — `Ctrl+B, %` splits horizontally, `Ctrl+B, "` splits vertically.**
+  ```bash
+  # Left pane: lazygit
+  # Right pane: Claude running a Ralph loop
+  ```
+
+- **Navigate between panes with `Ctrl+B` and arrow keys, or enable mouse support for click-to-focus.**
+  ```bash
+  set -g mouse on
+  ```
+
+- **Add `set -g mouse on` to `~/.tmux.conf` so mouse interaction is enabled by default in every session.**
+  ```bash
+  nano ~/.tmux.conf
+  ```
+
+- **Synchronize panes to type the same input across multiple panes at once — useful for running the same prompt in multiple agents.**
+  ```bash
+  set-window-option synchronize-panes on
+  ```
+
+- **Stick close to tmux defaults instead of heavy customization — muscle memory makes the commands second nature within a day or two.**
+
+- **Use tmux where possible; screen is a great fallback for environments that can't install tmux.**

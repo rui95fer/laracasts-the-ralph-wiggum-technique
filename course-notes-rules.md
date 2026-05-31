@@ -132,36 +132,98 @@ Works but less retrievable:
 
 ## Rules for Examples
 
-### 1. Pair each lesson with exactly one small example
+### 1. Keep examples minimal
 
-The example must demonstrate the lesson and appear directly underneath it.
+Show only the code that demonstrates the lesson. Strip everything else.
 
-Good format:
-
-````md
-- Route model binding resolves models from route parameters.
-  ```php
-  Route::get('/posts/{post}', function (Post $post) {
-      return view('posts.show', ['post' => $post]);
-  });
-  ```
-````
-
-### 2. Keep examples small
-
-Examples only show one idea, not full code or entire workflows.
-
-Good (small):
+Good:
 
 ```php
-$request->validate([
-    'title' => ['required', 'max:255'],
-]);
+Route::get('/posts', PostController::class);
 ```
 
-Avoid: Full controllers, full services, or multi-step workflows.
+Avoid:
+
+```php
+// 20 lines of boilerplate that don't relate to the lesson
+```
 
 ---
+
+### 2. Use real-world snippets, not toy examples
+
+Prefer code you would actually write in a project. Abstract examples like `foo()` and `bar()` are harder to recall later.
+
+Good:
+
+```php
+Post::where('published', true)->latest()->paginate(10);
+```
+
+Avoid:
+
+```php
+Model::doSomething()->doAnotherThing();
+```
+
+---
+
+### 3. Show before/after when teaching refactoring
+
+If the lesson is about improving existing code, show both states. This builds pattern recognition.
+
+```php
+// Before
+public function index()
+{
+    $posts = Post::all();
+    return view('posts.index', compact('posts'));
+}
+
+// After — using a resource
+public function index()
+{
+    return PostResource::collection(Post::paginate(10));
+}
+```
+
+---
+
+### 4. Add a comment only when the key point is not obvious
+
+Use a short comment to highlight what the lesson is about. Do not comment every line.
+
+Good:
+
+```php
+// The route model binding automatically resolves Post from the URL
+public function show(Post $post) { }
+```
+
+Avoid:
+
+```php
+// This is a controller method
+// It takes a Post
+// It returns a view
+public function show(Post $post) { }
+```
+
+---
+
+### 5. Keep snippets copy-paste ready
+
+When possible, use code that works if pasted into a real project. This makes your notes a reference you can reuse.
+
+---
+
+### 6. Use inline code for short references
+
+When mentioning a method, class, or function in a lesson bullet, wrap it in backticks so it stands out:
+
+```md
+- Use `PostResource::collection()` to transform a collection of models into a JSON-compatible format.
+```
 
 ## Formatting Rules
 
