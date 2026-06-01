@@ -305,3 +305,85 @@
   ```md
   Overrides → allow un-sandboxed fallback
   ```
+
+## Episode 07 — Configuring Hooks
+
+- **Native sandboxing only auto-allows bash commands; MCP tools still go through the normal permission flow.**
+  ```md
+  Sandbox auto-allow: Bash(...)
+  MCP tool call: asks for permission
+  ```
+
+- **Use a `PreToolUse` hook when static allow and deny lists are too broad for a tool.**
+  ```json
+  {
+    "hooks": {
+      "PreToolUse": [
+        {
+          "matcher": "mcp__chrome-devtools__.*",
+          "hooks": []
+        }
+      ]
+    }
+  }
+  ```
+
+- **Move MCP permissions out of the allow list and into a hook when you need to inspect the request details.**
+  ```json
+  {
+    "allow": [],
+    "hooks": {
+      "PreToolUse": [
+        { "matcher": "mcp__chrome-devtools__.*" }
+      ]
+    }
+  }
+  ```
+
+- **A command hook can allow or deny a tool call by printing the expected hook output JSON.**
+  ```json
+  {
+    "hookSpecificOutput": {
+      "hookEventName": "PreToolUse",
+      "permissionDecision": "deny",
+      "permissionDecisionReason": "No fetching laracars.com; use laracars.test."
+    }
+  }
+  ```
+
+- **Write deny reasons as instructions because the model can read them and try a safer alternative.**
+  ```json
+  {
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Use https://laracars.test instead."
+  }
+  ```
+
+- **Log hook input and decisions while debugging so you can see which tool call was allowed or blocked.**
+  ```bash
+  printf '%s\n' "$HOOK_INPUT" >> pre-dev-tools.log
+  ```
+
+- **Prompt-based hooks can ask another model to decide, but a command that runs a prompt file is easier to maintain.**
+  ```json
+  {
+    "type": "command",
+    "command": "claude -p < .claude/hooks/pre-tool-use.md"
+  }
+  ```
+
+- **A generic security-review hook can inspect every permission request, but it adds latency and token cost.**
+  ```json
+  {
+    "matcher": "",
+    "hooks": [
+      { "type": "command", "command": "claude -p < .claude/hooks/review-tool.md" }
+    ]
+  }
+  ```
+
+- **Use generic reviewer hooks for unattended Ralph loops when the extra safety is worth slower tool calls.**
+  ```md
+  Overnight loop: useful safety net
+  Interactive session: often too slow
+  ```
