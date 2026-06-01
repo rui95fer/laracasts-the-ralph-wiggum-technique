@@ -387,3 +387,41 @@
   Overnight loop: useful safety net
   Interactive session: often too slow
   ```
+
+## Episode 08 — A Word On Auto Mode
+
+- **Auto Mode lets Claude decide permission requests automatically, similar to a prompt-based `PreToolUse` security hook.**
+  ```bash
+  claude --enable-auto-mode
+  ```
+
+- **Auto Mode uses a separate classifier model to approve safe tool calls without pausing for manual permission.**
+  ```md
+  Tool request → Auto Mode classifier → allow or block
+  ```
+
+- **Expect extra latency and token usage because permission requests are reviewed by the classifier.**
+  ```md
+  Safer unattended runs → extra model call → slower tool use
+  ```
+
+- **Auto Mode ignores blanket shell allow rules so broad bash access cannot bypass its safety checks.**
+  ```md
+  Bash(*) allow rule → ignored in Auto Mode
+  ```
+
+- **Auto Mode reduces prompt-injection risk by stripping tool results before permission review.**
+  ```md
+  External site content → not trusted as permission context
+  ```
+
+- **Auto Mode blocks destructive or irreversible actions like deployments and infrastructure changes.**
+  ```md
+  Deploy production → blocked
+  Modify infrastructure → blocked
+  ```
+
+- **Auto Mode is promising for unattended Ralph loops, but research-preview flakiness can stall print-mode runs.**
+  ```md
+  Auto Mode unavailable → regular permissions fallback → print mode stalls
+  ```
