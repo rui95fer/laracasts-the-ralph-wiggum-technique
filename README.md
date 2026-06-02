@@ -508,3 +508,50 @@
   ```bash
   yolobox run --no-network curl https://google.com
   ```
+
+## Episode 10 — Turning Our Ralph Script Into A Flexible CLI
+
+- **Write a PRD before replacing a script so the agent has clear CLI requirements and boundaries.**
+  ```md
+  Build a Bun-powered Ralph CLI in ./ralph-cli with tabs, streaming output, and yolobox support.
+  ```
+
+- **Create the rewrite in a new directory when the existing script still works and can run one final implementation loop.**
+  ```bash
+  yolobox node ralph.js 30
+  ```
+
+- **Use a terminal UI when a loop needs live controls instead of only start-and-wait behavior.**
+  ```md
+  Top tabs: agent-1 | agent-2 | agent-3
+  Bottom status: C spawn | X close | Q quit
+  ```
+
+- **Load PRDs from the backlog so spawning a new agent starts from approved work, not an ad hoc prompt.**
+  ```js
+  const prds = await readdir('prd/backlog');
+  ```
+
+- **Stream `claude -p` JSON output into each tab so every running agent stays observable.**
+  ```bash
+  claude -p --output-format stream-json --verbose "$prompt"
+  ```
+
+- **Add a `--yolobox` flag when sandboxing should be a launch-time choice instead of a separate workflow.**
+  ```bash
+  yolobox claude --claude-config --git-config -- -p --output-format stream-json --verbose "$prompt"
+  ```
+
+- **Build and install the Bun CLI globally so Ralph can run from any project directory.**
+  ```bash
+  bun run build
+  bun run install-cli
+  ralph
+  ```
+
+- **Parallel agent tabs improve control, but agents working in the same directory can still conflict.**
+  ```md
+  agent-1 edits checkout.md
+  agent-2 edits checkout.md
+  # Shared workspace conflicts need a separate solution.
+  ```
