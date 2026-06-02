@@ -425,3 +425,86 @@
   ```md
   Auto Mode unavailable → regular permissions fallback → print mode stalls
   ```
+
+## Episode 09 — Bypassing Permissions Safely
+
+- **Bypass Permissions mode removes normal approval prompts, so only use it when another safety boundary is active.**
+  ```bash
+  claude --dangerously-skip-permissions
+  ```
+
+- **You can make bypass mode the default, but every new Claude session will start without regular permission checks.**
+  ```md
+  Settings → Default mode → Bypass Permissions
+  ```
+
+- **The native sandbox still runs in bypass mode, but unsandboxed fallback gets auto-allowed unless something else blocks it.**
+  ```md
+  Sandbox command → auto-allowed
+  Outside sandbox → bypass mode auto-allows
+  ```
+
+- **The allow list becomes redundant in bypass mode, but the deny list still blocks dangerous commands.**
+  ```json
+  {
+    "deny": ["rm *", "git reset --hard"]
+  }
+  ```
+
+- **`PreToolUse` hooks still fire in bypass mode, so hooks remain useful for logging and targeted denials.**
+  ```json
+  {
+    "hooks": {
+      "PreToolUse": [{ "matcher": "mcp__chrome-devtools__.*" }]
+    }
+  }
+  ```
+
+- **Use strict sandbox mode when you do not want Bash commands to fall back to unsandboxed execution.**
+  ```md
+  Overrides → allow un-sandboxed fallback: off
+  ```
+
+- **The OS enforces strict sandbox file rules, so Claude cannot bypass a denied write from inside Bash.**
+  ```bash
+  echo "hello world" > prd/test.txt
+  # denied when prd is denyWrite and fallback is disabled
+  ```
+
+- **Native sandboxing protects Bash tool execution, not every tool the agent can call.**
+  ```md
+  Bash(...) → sandboxed
+  Other tool calls → rely on their own controls
+  ```
+
+- **Host access is risky because the agent can run installed CLIs with your local credentials.**
+  ```bash
+  aws ec2 describe-regions
+  ```
+
+- **Container sandboxes reduce host risk by giving the agent unrestricted access only inside an isolated environment.**
+  ```md
+  Host machine → container boundary → mounted project directory
+  ```
+
+- **yolobox is useful for Ralph loops because it mounts the project while keeping the host home directory separate.**
+  ```bash
+  yolobox claude --claude-config --git-config
+  ```
+
+- **Customize the yolobox container per project instead of relying on tools installed on the host.**
+  ```toml
+  # .yolobox.toml
+  [customize]
+  packages = ["php8.3"]
+  ```
+
+- **Mount Docker only when the agent needs project services because it gives the container more power.**
+  ```bash
+  yolobox claude --docker --git-config --gh-token
+  ```
+
+- **Use `--no-network` when you want to block internet access and reduce exfiltration risk.**
+  ```bash
+  yolobox run --no-network curl https://google.com
+  ```
