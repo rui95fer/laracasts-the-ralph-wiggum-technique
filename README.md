@@ -642,3 +642,81 @@
   git merge persistent-cart
   yarn dev
   ```
+
+## Episode 12 — Tracking PRDs With Linear
+
+- **Use Linear when file-based PRDs become too flat for detailed sub-task context.**
+  ```md
+  Parent issue: Product highlight PRD
+  Sub-issue: Add featured section with badge details
+  ```
+
+- **Store the Linear API key as an environment variable so the Ralph CLI can read and update issues.**
+  ```bash
+  export LINEAR_API_KEY="your-api-key"
+  ```
+
+- **Update and reinstall the Ralph CLI when new integrations add extra binaries or flags.**
+  ```bash
+  bun install
+  bun run build
+  bun run install-cli
+  ```
+
+- **Configure Ralph for Linear by selecting the tracker, team, label filter, polling interval, and PR behavior.**
+  ```toml
+  tracker = "linear"
+  linear_team = "SAP"
+  linear_label = "agent-ralph"
+  poll_interval = 30
+  auto_create_pr = true
+  ```
+
+- **Forward `LINEAR_API_KEY` into yolobox because containerized agents do not automatically inherit host secrets.**
+  ```toml
+  [yolobox]
+  env = ["LINEAR_API_KEY"]
+  ```
+
+- **A Linear PRD skill can create one parent issue and one child issue per implementation task.**
+  ```md
+  Parent: Highlight featured products
+  Children:
+  - Add featured flag
+  - Render featured section
+  - Add featured badge
+  ```
+
+- **Resolve the Linear team and backlog state through the API before creating issues.**
+  ```js
+  const team = await linear.getTeamByKey(config.linear_team);
+  const backlog = await linear.getBacklogState(team.id);
+  ```
+
+- **Use a grilling or interview skill before PRD creation when feature requirements are still vague.**
+  ```md
+  Ask: What does highlighting a product mean to the user?
+  Answer: A featured section at the top of the shop.
+  ```
+
+- **Mark approved Linear PRDs with the watched label and status so Ralph can pick them up automatically.**
+  ```md
+  Status: Todo
+  Label: agent-ralph
+  ```
+
+- **Injecting a Linear CLI system prompt lets the agent manage issues without relying on local skill files.**
+  ```bash
+  claude --append-system-prompt "Use $RALPH_LINEAR to read and update Linear issues."
+  ```
+
+- **Have Ralph update Linear while it works so issue status, comments, labels, and completion stay in sync.**
+  ```bash
+  $RALPH_LINEAR issue update SAP-123 --status done
+  $RALPH_LINEAR comment create SAP-123 "Opened pull request."
+  ```
+
+- **GitHub and Linear integrations close the loop when a generated pull request is merged.**
+  ```md
+  Ralph creates PR → GitHub detects merge → Linear issue moves to Done
+  ```
