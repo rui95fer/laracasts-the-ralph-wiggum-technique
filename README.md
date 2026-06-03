@@ -555,3 +555,90 @@
   agent-2 edits checkout.md
   # Shared workspace conflicts need a separate solution.
   ```
+
+## Episode 11 — Agent Workspaces
+
+- **Run agents in isolated workspaces so your main branch stays usable while Ralph loops are running.**
+  ```md
+  main/        # your active work
+  workspaces/  # agent branches or copies
+  ```
+
+- **Use `git worktree` when you want a separate checkout with its own branch but shared git history.**
+  ```bash
+  git worktree add -b my-feature ../view-shop-my-feature
+  ```
+
+- **Bootstrap worktrees because untracked files like dependencies and env files are not copied automatically.**
+  ```bash
+  cd ../view-shop-my-feature
+  yarn install
+  yarn dev
+  ```
+
+- **Use a `post-checkout` hook to install dependencies when a new worktree is missing them.**
+  ```bash
+  if [ ! -d node_modules ]; then
+      yarn install
+  fi
+  ```
+
+- **Clean up worktrees through git so stale worktree records and temporary branches do not pile up.**
+  ```bash
+  git worktree remove ../view-shop-my-feature
+  git branch -D my-feature
+  ```
+
+- **Run `git worktree prune` when you deleted the folder manually and git still lists it as prunable.**
+  ```bash
+  rm -rf ../view-shop-my-feature
+  git worktree prune
+  ```
+
+- **Use Portless to give each running dev server a stable URL instead of chasing changing Vite ports.**
+  ```bash
+  portless run yarn dev --host
+  ```
+
+- **Portless can name worktree URLs from the branch, which makes testing multiple branches easier.**
+  ```md
+  main       → https://view-shop.portless.test
+  my-feature → https://my-feature.view-shop.portless.test
+  ```
+
+- **Configure Ralph's workspace handling so unattended loops create workspaces in a predictable place.**
+  ```toml
+  workspace_mode = "worktree"
+  workspace_directory = "workspaces"
+  yolobox = true
+  ```
+
+- **Use copy-on-write when you want a fast workspace clone without duplicating unchanged files.**
+  ```bash
+  cp -R -C view-shop view-shop-cow
+  ```
+
+- **Copy-on-write keeps dependencies and env files available immediately because it starts from the full directory snapshot.**
+  ```bash
+  cd ../view-shop-cow
+  test -d node_modules && yarn dev
+  ```
+
+- **Prefer worktrees on Windows because copy-on-write is mainly practical on APFS and Btrfs file systems.**
+  ```md
+  macOS APFS → copy-on-write works
+  Linux Btrfs → copy-on-write works
+  Windows → use git worktree
+  ```
+
+- **Name Portless projects manually for copy-on-write folders because they are not git worktrees.**
+  ```bash
+  portless view-shop-persistent-cart yarn dev --host
+  ```
+
+- **Merge completed agent branches back into main, then retest the combined behavior after resolving conflicts.**
+  ```bash
+  git merge my-feature
+  git merge persistent-cart
+  yarn dev
+  ```
