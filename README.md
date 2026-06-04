@@ -779,3 +779,61 @@
   ```bash
   yarn dev
   ```
+
+## Episode 14 — Offloading Loops To A Remote Machine
+
+- **Use a remote worker when Ralph should keep running on an always-on machine instead of your local laptop.**
+  ```bash
+  ssh Cloudbox
+  tmux new -s laracasts_ralph
+  cd ~/projects/view-shop
+  ralph
+  ```
+
+- **Set up the remote machine like a real development environment because the agent runs there, not locally.**
+  ```bash
+  ralph --version
+  export LINEAR_API_KEY="your-api-key"
+  gh auth status
+  ```
+
+- **Use `tmux` as the persistence layer so the remote loop survives after you disconnect.**
+  ```bash
+  # Detach locally, then reconnect later
+  tmux attach -t laracasts_ralph
+  ```
+
+- **Configure Ralph remote mode when you want the local CLI to dispatch work over SSH.**
+  ```toml
+  [remote]
+  host = "Cloudbox"
+  project_directory = "~/projects/view-shop"
+  workspace_mode = "copy-on-write"
+  workspace_directory = "laracasts"
+  yolobox = true
+  auto_create_pr = true
+  ```
+
+- **Dispatching through remote mode streams logs back locally while the actual headless agent runs inside remote `tmux`.**
+  ```bash
+  ralph --remote Cloudbox
+  ```
+
+- **Quitting the local control pane should detach from the remote loop, not kill the running agent.**
+  ```md
+  Press Q locally → detach from logs
+  Remote tmux session → keeps working
+  ```
+
+- **Use a dedicated GitHub account for remote agents to separate human commits from agent commits.**
+  ```bash
+  gh auth login
+  git config user.name "Cloudbox Agent"
+  ```
+
+- **Review remote-generated pull requests the same way you review local agent work before merging.**
+  ```bash
+  gh pr checkout 5
+  yarn install
+  yarn dev
+  ```
