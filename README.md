@@ -720,3 +720,62 @@
   ```md
   Ralph creates PR → GitHub detects merge → Linear issue moves to Done
   ```
+
+## Episode 13 — Human In The Loop
+
+- **Unattended AI loops drift when an ambiguous decision is wrong early and later tasks build on it.**
+  ```md
+  Ambiguous schema → wrong implementation → unusable feature
+  ```
+
+- **Use human-in-the-loop mode for important architectural choices that need review before the loop continues.**
+  ```md
+  [Human In The Loop] Define menu item customization data model
+  ```
+
+- **Ralph can detect a human-in-the-loop task title and pause the issue in review instead of marking it done.**
+  ```md
+  Child issue: In Review
+  Parent issue: In Review
+  ```
+
+- **Add a hook for human-in-the-loop stops so you notice when Ralph needs manual review.**
+  ```toml
+  human_in_the_loop_hook = "afplay notification.mp3"
+  ```
+
+- **Mark only high-risk child issues for review so routine tasks can still run unattended.**
+  ```md
+  Parent: Add menu item add-ons and modifiers
+  Review task: Define customization schema
+  Routine task: Render selected options in cart
+  ```
+
+- **Review the model's proposal before downstream implementation work locks in the wrong structure.**
+  ```md
+  Feedback: options needs an id field.
+  Type: unsigned integer.
+  ```
+
+- **Move the reviewed issue back to todo after commenting so Ralph can apply the feedback in the next loop.**
+  ```md
+  Comment added → status Todo → Ralph continues
+  ```
+
+- **Remove the human-in-the-loop marker when the decision is approved and another pause is unnecessary.**
+  ```md
+  Before: [Human In The Loop] Define customization schema
+  After: Define customization schema
+  ```
+
+- **Small review feedback can prevent larger code problems, like using unstable names instead of IDs as keys.**
+  ```vue
+  <li v-for="option in customization.options" :key="option.id">
+      {{ option.name }}
+  </li>
+  ```
+
+- **Test the completed feature in the agent workspace before merging because the loop only proves implementation, not product fit.**
+  ```bash
+  yarn dev
+  ```
