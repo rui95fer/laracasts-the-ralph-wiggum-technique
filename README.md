@@ -837,3 +837,69 @@
   yarn install
   yarn dev
   ```
+
+## Episode 15 — Experimenting With A Perpetual Loop
+
+- **A complete hook can turn Ralph from a finite loop into a perpetual system by starting follow-up work after a run finishes.**
+  ```md
+  Loop finished → merge open PR → plan next feature → start next loop
+  ```
+
+- **Keep post-loop actions small by assigning one agent to merge finished work and another to plan the next feature.**
+  ```md
+  Complete hook:
+  1. Merge the open pull request
+  2. Run the next-feature skill
+  ```
+
+- **The `next-feature` skill should read completed work and the product vision before choosing the next task.**
+  ```md
+  Read Linear done issues
+  Read vision.md
+  Create the next Linear issue
+  ```
+
+- **A vision document gives autonomous agents a north star so they do not invent random product direction.**
+  ```md
+  Goal: multi-tenant food ordering platform
+  Tech stack: Laravel, Inertia React, SQLite, built-in auth
+  ```
+
+- **Put guardrails in place before the loop starts because autonomous agents compound early mistakes quickly.**
+  ```md
+  Manual scaffold: laravel new
+  Browser skill: enabled
+  yolobox fragment: browser dependencies
+  Stop hook: test gate
+  ```
+
+- **A stop hook should make failed tests block progress so unattended agents cannot quietly move on.**
+  ```bash
+  php artisan test --compact
+  ```
+
+- **Browser verification matters for autonomous UI work because a green test suite can still miss visual glitches.**
+  ```md
+  Kitchen display → mark ready → refresh needed
+  Operating hours → overlapping slot allowed
+  ```
+
+- **Check secret storage manually because generated settings screens can accidentally persist plaintext credentials.**
+  ```sql
+  SELECT stripe_secret FROM tenants LIMIT 1;
+  -- Should be encrypted, not sk_test_...
+  ```
+
+- **Polling can prove an order-status flow, but production notifications usually need a stronger real-time path.**
+  ```md
+  Prototype: poll for notifications
+  Production: websockets or another realtime channel
+  ```
+
+- **Autonomous PRs can create a working prototype, but large generated diffs are too risky to trust without careful review.**
+  ```md
+  30 pull requests
+  31,881 additions
+  300+ files
+  Ship to production: no
+  ```
