@@ -903,3 +903,83 @@
   300+ files
   Ship to production: no
   ```
+
+## Episode 16 — Beyond Ralph Orchestration
+
+- **Symphony makes orchestration portable by describing the whole orchestrator in a single spec file.**
+  ```md
+  Point agent at symphony.md → agent implements the orchestrator
+  ```
+
+- **A workflow file tells the orchestrator how to handle matching Linear issues.**
+  ```md
+  If issue has label "Agent Ralph":
+  - work through child issues
+  - mark the parent done only when all children are complete
+  ```
+
+- **Polling Linear lets the CLI turn issue state into agent work without manual dispatch.**
+  ```md
+  Poll Linear → find active issue → spawn agent → update issue
+  ```
+
+- **Symphony is limited when all behavior must live in one `workflow.md` file.**
+  ```md
+  workflow.md
+  # PRD generation, Ralph loops, bug triage, and every other flow compete here.
+  ```
+
+- **Better Symphony adds a routing layer so different labels can use different workflow files.**
+  ```md
+  workflows/Ralph.md → label: Agent Ralph
+  workflows/PRD.md   → label: Agent PRD
+  ```
+
+- **Ralph mode belongs in the orchestrator, not inside the agent context window.**
+  ```md
+  Orchestrator loop → fresh agent run → update Linear → next child issue
+  ```
+
+- **Workflow hooks prepare the workspace before an agent starts working.**
+  ```md
+  after-create: clone repository
+  before-run: set up workspace
+  ```
+
+- **Routing rules decide which issues are active, terminal, and eligible for a workflow.**
+  ```md
+  active: Todo, In Progress
+  terminal: Done, Canceled
+  required label: Agent Ralph
+  ```
+
+- **Liquid templates build issue-specific prompts from parent, child, and progress data.**
+  ```md
+  Ralph Loop: sub-task {{ index }} of {{ total }}
+  Parent: {{ parent.identifier }} — {{ parent.title }}
+  Current: {{ issue.identifier }} — {{ issue.title }}
+  ```
+
+- **Concurrency belongs in the workflow so some agents can run in parallel while others stay serialized.**
+  ```md
+  PRD workflow: 3 concurrent agents
+  Ralph workflow: 1 concurrent agent
+  ```
+
+- **Labels can hand work from a PRD agent to a Ralph implementation loop.**
+  ```md
+  Agent PRD → create parent PRD and sub-issues
+  Agent Ralph → implement each child issue
+  ```
+
+- **Bug-triage workflows can revise their analysis when new issue comments add missing context.**
+  ```md
+  Comment: customer clarified the order was never registered
+  Re-dispatch issue → triage agent updates the root-cause analysis
+  ```
+
+- **The course pattern is to keep humans at the decision points and automate the repeatable execution loops.**
+  ```md
+  Human: define goal, review risky choices, merge carefully
+  Agents: generate PRD, split tasks, implement, update Linear
+  ```
